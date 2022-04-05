@@ -22,13 +22,13 @@ if __name__ == '__main__':
     activation = 'tanh'
 
     # 3. data generator
-    train_data = load_data('./data/unsup_sample.csv', dict_path, max_len)
+    train_data = load_data('./data/unsup_sample.csv', delimiter='\t')
 
-    train_generator = SimCseDataGenerator(train_data, batch_size)
+    train_generator = SimCseDataGenerator(train_data, dict_path, batch_size, max_len)
     # print(next(train_generator.forfit()))
 
     # 4. build model
-    model = simcse(config_path, checkpoint_path, dropout_rate=0.1, output_units=output_units,
+    model = simcse(config_path, checkpoint_path, dropout_rate=dropout_rate, output_units=output_units,
                    output_activation=activation)
 
     # 5. model compile
