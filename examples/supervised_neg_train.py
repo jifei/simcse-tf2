@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # with hard negative sampling
     # train_data = load_data('./data/sup_with_neg_sample.csv', delimiter='\t')
 
-    train_generator = SimCseDataGenerator(train_data, dict_path, batch_size, max_len)
+    train_generator = SimCseDataGenerator(train_data, dict_path, batch_size, max_len, text_tuple_size=3)
     # print(next(train_generator.forfit()))
 
     # 4. build model

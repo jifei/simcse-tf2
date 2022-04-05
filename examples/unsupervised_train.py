@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # 3. data generator
     train_data = load_data('./data/unsup_sample.csv', delimiter='\t')
 
-    train_generator = SimCseDataGenerator(train_data, dict_path, batch_size, max_len)
+    train_generator = SimCseDataGenerator(train_data, dict_path, batch_size, max_len, text_tuple_size=1)
     # print(next(train_generator.forfit()))
 
     # 4. build model

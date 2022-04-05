@@ -33,21 +33,29 @@ class SimCseDataGenerator(DataGenerator):
 
     """
 
-    def __init__(self, data, dict_path, batch_size=32, max_len=64, buffer_size=None):
+    def __init__(self, data, dict_path, batch_size=32, max_len=64, text_tuple_size=2, buffer_size=None):
+
         super().__init__(data, batch_size, buffer_size)
+        assert text_tuple_size in [1, 2, 3]
         self.tokenizer = get_tokenizer(dict_path)
         self.max_len = max_len
+        self.text_tuple_size = text_tuple_size
 
     def __iter__(self, random=False):
         batch_token_ids, batch_segment_ids, batch_labels = [], [], []
         for is_end, texts in self.sample(random):
-            for text in texts:
-                batch_token_ids.append(self.tokenizer.encode(text, maxlen=self.max_len)[0])
-            # (text1) unsupervised compare with self
-            if len(texts) == 1:
+            if self.text_tuple_size == 1:  # unsupervised one text,repeat self
                 batch_token_ids.append(self.tokenizer.encode(texts[0], maxlen=self.max_len)[0])
+                batch_token_ids.append(self.tokenizer.encode(texts[0], maxlen=self.max_len)[0])
+            elif self.text_tuple_size == 2:  # texts pair
+                batch_token_ids.append(self.tokenizer.encode(texts[0], maxlen=self.max_len)[0])
+                batch_token_ids.append(self.tokenizer.encode(texts[1], maxlen=self.max_len)[0])
+            else:  # negative sampling
+                batch_token_ids.append(self.tokenizer.encode(texts[0], maxlen=self.max_len)[0])
+                batch_token_ids.append(self.tokenizer.encode(texts[1], maxlen=self.max_len)[0])
+                batch_token_ids.append(self.tokenizer.encode(texts[2], maxlen=self.max_len)[0])
 
-            if len(batch_token_ids) == self.batch_size * max(2, len(texts)) or is_end:
+            if len(batch_token_ids) == self.batch_size * self.text_tuple_size or is_end:
                 batch_token_ids = sequence_padding(batch_token_ids)
                 batch_segment_ids = np.zeros_like(batch_token_ids)
                 batch_labels = np.zeros_like(batch_token_ids[:, :1])
